@@ -137,7 +137,9 @@ export default function CheckoutForm() {
         createdAt: new Date().toISOString()
       };
 
+      console.log('Saving order data to sessionStorage:', orderData);
       sessionStorage.setItem('lastOrder', JSON.stringify(orderData));
+      console.log('Saved to sessionStorage');
 
       // Show success message and navigate to confirmation
       toast.success('¡Pedido realizado con éxito!');
