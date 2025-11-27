@@ -186,8 +186,10 @@ export default function ConfirmacionPage() {
   const whatsappUrl = whatsappMessage 
     ? `https://wa.me/${contactInfo.whatsapp}?text=${encodeURIComponent(whatsappMessage)}`
     : `https://wa.me/${contactInfo.whatsapp}`;
-  const simpleWhatsappMessage = generateSimpleWhatsAppMessage();
-  const simpleWhatsappUrl = `https://wa.me/${contactInfo.whatsapp}?text=${encodeURIComponent(simpleWhatsappMessage)}`;
+  const simpleWhatsappMessage = orderData ? generateSimpleWhatsAppMessage() : '';
+  const simpleWhatsappUrl = simpleWhatsappMessage
+    ? `https://wa.me/${contactInfo.whatsapp}?text=${encodeURIComponent(simpleWhatsappMessage)}`
+    : `https://wa.me/${contactInfo.whatsapp}`;
 
   // Show loading state
   if (isLoading) {
