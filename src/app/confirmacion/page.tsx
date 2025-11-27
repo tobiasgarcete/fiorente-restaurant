@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { CheckCircle, Home, MessageCircle, Copy, Check, ShoppingBag, User, Phone, Mail, MapPin, Store, Calendar } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { contactInfo } from '@/lib/menu-data';
 
 /**
  * Order item interface
@@ -73,7 +74,8 @@ export default function ConfirmacionPage() {
         // No order data, redirect to home
         router.push('/');
       }
-    } catch {
+    } catch (error) {
+      console.error('Error loading order data:', error);
       toast.error('Error al cargar los datos del pedido');
       router.push('/');
     } finally {
@@ -89,7 +91,8 @@ export default function ConfirmacionPage() {
       setCopied(true);
       toast.success('Número de pedido copiado');
       setTimeout(() => setCopied(false), 2000);
-    } catch {
+    } catch (error) {
+      console.error('Error copying to clipboard:', error);
       toast.error('No se pudo copiar');
     }
   };
@@ -129,7 +132,7 @@ ${itemsText}
     return message;
   };
 
-  const whatsappUrl = `https://wa.me/5493704858785?text=${encodeURIComponent(generateWhatsAppMessage())}`;
+  const whatsappUrl = `https://wa.me/${contactInfo.whatsapp}?text=${encodeURIComponent(generateWhatsAppMessage())}`;
 
   // Show loading state
   if (isLoading) {
