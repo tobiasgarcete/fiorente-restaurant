@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -98,41 +98,65 @@ export default function ConfirmacionPage() {
   };
 
   // Generate WhatsApp message with full order details
-  const generateWhatsAppMessage = (): string => {
+  // Note: Avoiding emojis and special characters for better encoding compatibility
+  const generateWhatsAppMessage = useCallback((): string => {
     if (!orderData) return '';
 
-    const deliveryTypeText = orderData.deliveryType === 'retiro' ? 'Retiro en local' : 'Envío a domicilio';
+    const deliveryTypeText = orderData.deliveryType === 'retiro' ? 'Retiro en local' : 'Envio a domicilio';
     
-    let itemsText = orderData.items
-      .map((item) => `- ${item.name} x${item.quantity} - ${formatPrice(item.price * item.quantity)}`)
+    // Build items list
+    const itemsList = orderData.items
+      .map((item) => `${item.name} x${item.quantity} - ${(item.price * item.quantity).toLocaleString('es-AR')}`)
       .join('\n');
 
-    let message = `¡Hola Fiorente! 👋
+    // Build message parts
+    const messageParts = [
+      'Hola Fiorente!',
+      '',
+      'Acabo de realizar un pedido desde la web:',
+      '',
+      `Pedido: ${orderData.orderNumber}`,
+      `Nombre: ${orderData.customerName}`,
+      `Telefono: ${orderData.customerPhone}`,
+      `Tipo: ${deliveryTypeText}`
+    ];
 
-Acabo de realizar un pedido desde la web:
-
-📦 *Pedido #${orderData.orderNumber}*
-👤 *Nombre:* ${orderData.customerName}
-📞 *Teléfono:* ${orderData.customerPhone}
-🚚 *Tipo:* ${deliveryTypeText}`;
-
+    // Add address if delivery
     if (orderData.deliveryType === 'envio' && orderData.deliveryAddress) {
-      message += `\n📍 *Dirección:* ${orderData.deliveryAddress}`;
+      messageParts.push(`Direccion: ${orderData.deliveryAddress}`);
     }
 
-    message += `
+    // Add items
+    messageParts.push('');
+    messageParts.push('Detalle del pedido:');
+    messageParts.push(itemsList);
+    messageParts.push('');
+    messageParts.push(`Total: ${orderData.totalAmount.toLocaleString('es-AR')}`);
+    messageParts.push('');
+    messageParts.push('Como puedo realizar el pago?');
 
-*Detalle del pedido:*
-${itemsText}
+    return messageParts.join('\n');
+  }, [orderData]);
 
-💰 *Total: ${formatPrice(orderData.totalAmount)}*
+  // Generate a simpler message as fallback
+  const generateSimpleWhatsAppMessage = useCallback((): string => {
+    if (!orderData) return '';
+    return `Hola! Hice un pedido: ${orderData.orderNumber}. Total: ${orderData.totalAmount.toLocaleString('es-AR')}`;
+  }, [orderData]);
 
-¿Cómo puedo realizar el pago?`;
+  // Debug: Log the message to verify it's being generated
+  useEffect(() => {
+    if (orderData) {
+      const message = generateWhatsAppMessage();
+      console.log('WhatsApp Message:', message);
+      console.log('WhatsApp URL:', `https://wa.me/${contactInfo.whatsapp}?text=${encodeURIComponent(message)}`);
+    }
+  }, [orderData, generateWhatsAppMessage]);
 
-    return message;
-  };
-
-  const whatsappUrl = `https://wa.me/${contactInfo.whatsapp}?text=${encodeURIComponent(generateWhatsAppMessage())}`;
+  const whatsappMessage = generateWhatsAppMessage();
+  const whatsappUrl = `https://wa.me/${contactInfo.whatsapp}?text=${encodeURIComponent(whatsappMessage)}`;
+  const simpleWhatsappMessage = generateSimpleWhatsAppMessage();
+  const simpleWhatsappUrl = `https://wa.me/${contactInfo.whatsapp}?text=${encodeURIComponent(simpleWhatsappMessage)}`;
 
   // Show loading state
   if (isLoading) {
@@ -342,7 +366,7 @@ ${itemsText}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
-            className="mb-6"
+            className="mb-6 text-center"
           >
             <a
               href={whatsappUrl}
@@ -352,6 +376,14 @@ ${itemsText}
             >
               <MessageCircle size={24} />
               📱 Confirmar pedido por WhatsApp
+            </a>
+            <a
+              href={simpleWhatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block mt-3 text-sm text-gray-400 hover:text-fiorente-primary underline"
+            >
+              ¿No funciona el botón? Prueba esta versión simple
             </a>
           </motion.div>
 
