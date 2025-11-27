@@ -66,15 +66,20 @@ export async function POST(request: Request) {
     };
 
     // Try to save to MongoDB, but don't fail if connection is unavailable
+    let savedToDb = false;
     try {
       await dbConnect();
       const order = new Order(orderData);
       await order.save();
-      console.log('Order saved to database:', orderNumber);
+      console.log('Pedido guardado en base de datos:', orderNumber);
+      savedToDb = true;
     } catch (dbError) {
-      // Log the error but don't fail the request
-      console.warn('Could not save to database:', dbError);
-      // Continue with success response as the order number was generated
+      // Log the error with order details for manual recovery if needed
+      console.error('ERROR: No se pudo guardar el pedido en la base de datos');
+      console.error('Número de pedido:', orderNumber);
+      console.error('Datos del pedido:', JSON.stringify(orderData));
+      console.error('Error de DB:', dbError);
+      // Continue with success response - the order can be processed manually
     }
 
     return NextResponse.json(
@@ -82,6 +87,7 @@ export async function POST(request: Request) {
         success: true,
         orderNumber,
         message: 'Pedido creado exitosamente',
+        savedToDb,
       },
       { status: 201 }
     );

@@ -34,7 +34,7 @@ async function dbConnect(): Promise<typeof mongoose> {
 
   // Check for MongoDB URI
   if (!MONGODB_URI) {
-    console.warn('MongoDB URI not configured. Database features will be unavailable.');
+    console.warn('MONGODB_URI no está configurado. Las funciones de base de datos no estarán disponibles.');
     throw new Error('Por favor define la variable MONGODB_URI en .env.local');
   }
 

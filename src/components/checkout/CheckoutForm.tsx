@@ -89,22 +89,29 @@ export default function CheckoutForm() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/pedidos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...formData,
-          items: items.map((item) => ({
-            productId: item.id,
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
-          })),
-          totalAmount: getTotalPrice(),
-        }),
-      });
+      let response;
+      try {
+        response = await fetch('/api/pedidos', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ...formData,
+            items: items.map((item) => ({
+              productId: item.id,
+              name: item.name,
+              price: item.price,
+              quantity: item.quantity,
+            })),
+            totalAmount: getTotalPrice(),
+          }),
+        });
+      } catch (networkError) {
+        console.error('Network error:', networkError);
+        toast.error('Error de conexión. Verifica tu internet e intenta nuevamente.');
+        return;
+      }
 
       const data = await response.json();
 

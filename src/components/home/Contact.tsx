@@ -24,7 +24,7 @@ export default function Contact() {
           className="text-center mb-16"
         >
           <h2 className="font-display text-3xl md:text-4xl font-bold text-fiorente-primary mb-4">
-            Visitanos
+            Visítanos
           </h2>
           <div className="w-24 h-1 bg-fiorente-primary mx-auto mb-6" />
           <p className="text-gray-300 max-w-2xl mx-auto">
