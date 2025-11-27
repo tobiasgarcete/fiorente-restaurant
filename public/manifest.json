@@ -1,0 +1,16 @@
+{
+  "name": "Fiorente Restaurant",
+  "short_name": "Fiorente",
+  "description": "Pizzería, Cafetería y Bar - Formosa, Argentina",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1A1A1A",
+  "theme_color": "#F0A030",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
