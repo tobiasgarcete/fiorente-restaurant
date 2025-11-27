@@ -56,7 +56,7 @@ export default function CheckoutForm() {
 
     if (!formData.customerPhone.trim()) {
       newErrors.customerPhone = 'El teléfono es requerido';
-    } else if (!/^[\d\s()-+]+$/.test(formData.customerPhone)) {
+    } else if (!/^[\d\s()+-]+$/.test(formData.customerPhone)) {
       newErrors.customerPhone = 'Ingresa un número de teléfono válido';
     }
 
@@ -119,9 +119,11 @@ export default function CheckoutForm() {
         throw new Error(data.error || 'Error al procesar el pedido');
       }
 
+      // CORRECTA obtención del número de orden:
+      const orderNumber = data.order?.orderNumber;
       // Save order data to sessionStorage for confirmation page
       const orderData = {
-        orderNumber: data.orderNumber,
+        orderNumber,
         customerName: formData.customerName,
         customerPhone: formData.customerPhone,
         customerEmail: formData.customerEmail || '',
@@ -153,10 +155,13 @@ export default function CheckoutForm() {
       // Wait to ensure sessionStorage is persisted before navigation
       setTimeout(() => {
         console.log('🚀 Navigating to confirmation page...');
-        
-        // Navigate to confirmation page
-        router.push('/confirmacion');
-        
+        if (orderNumber) {
+          // Redirige con número de pedido en la URL (flujo robusto)
+          router.push(`/confirmacion?pedido=${orderNumber}`);
+        } else {
+          toast.error('No se pudo obtener el número de pedido, contacta al local.');
+          router.push('/confirmacion');
+        }
         // Clear cart AFTER navigation has started
         setTimeout(() => {
           clearCart();

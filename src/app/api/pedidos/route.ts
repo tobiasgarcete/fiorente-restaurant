@@ -82,10 +82,14 @@ export async function POST(request: Request) {
       // Continue with success response - the order can be processed manually
     }
 
+    // Devuelve toda la info creada para sessionStorage y confirmación
     return NextResponse.json(
       {
         success: true,
-        orderNumber,
+        order: {
+          ...orderData,
+          createdAt: new Date().toISOString()
+        },
         message: 'Pedido creado exitosamente',
         savedToDb,
       },
@@ -101,17 +105,32 @@ export async function POST(request: Request) {
 }
 
 /**
- * GET /api/pedidos - Get all orders (for admin purposes)
+ * GET /api/pedidos
+ *  - Si tiene searchParam orderNumber (ej: ?orderNumber=FIO-...), devuelve solo ese pedido
+ *  - Si no, devuelve el listado admin (últimos 100)
  */
-export async function GET() {
+export async function GET(request: Request) {
   try {
     await dbConnect();
-    const orders = await Order.find({}).sort({ createdAt: -1 }).limit(100);
-    
-    return NextResponse.json({
-      success: true,
-      orders,
-    });
+
+    const { searchParams } = new URL(request.url);
+    const orderNumber = searchParams.get('orderNumber');
+
+    if (orderNumber) {
+      // Buscar por número de pedido
+      const pedido = await Order.findOne({ orderNumber });
+      if (!pedido) {
+        return NextResponse.json({ error: 'Pedido no encontrado' }, { status: 404 });
+      }
+      return NextResponse.json({ success: true, order: pedido });
+    } else {
+      // Listar todos para admin
+      const orders = await Order.find({}).sort({ createdAt: -1 }).limit(100);
+      return NextResponse.json({
+        success: true,
+        orders,
+      });
+    }
   } catch (error) {
     console.error('Error fetching orders:', error);
     return NextResponse.json(
