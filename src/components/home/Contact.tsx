@@ -9,8 +9,8 @@ import { contactInfo, businessHours } from '@/lib/menu-data';
  * Contact - Contact section with map, info, and social links
  */
 export default function Contact() {
-  // Google Maps embed URL
-  const mapUrl = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3560.8!2d-58.185!3d-26.182!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjbCsDEwJzU1LjIiUyA1OMKwMTEnMDYuMCJX!5e0!3m2!1ses!2sar!4v1600000000000!5m2!1ses!2sar`;
+  // Google Maps embed URL - Fiorente: Av. 25 de Mayo 368, Formosa, Argentina
+  const mapUrl = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3560.8!2d-58.173056!3d-26.184722!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjbCrDExJzA1LjAiUyA1OMKwMTAnMjMuMCJX!5e0!3m2!1ses!2sar!4v1600000000000!5m2!1ses!2sar`;
 
   return (
     <section id="contacto" className="py-20 bg-fiorente-secondary">

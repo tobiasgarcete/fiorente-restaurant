@@ -54,7 +54,7 @@ export default function Hero() {
             PIZZERÍA | CAFETERÍA | BAR
           </p>
           <p className="text-fiorente-lightOrange text-sm md:text-base tracking-wide">
-            Formosa, Argentina
+            Av. 25 de Mayo 368, Formosa, Argentina
           </p>
         </motion.div>
 
