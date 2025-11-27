@@ -408,20 +408,32 @@ export default function ConfirmacionPage() {
                 // Copy message to clipboard
                 try {
                   const message = generateWhatsAppMessage();
-                  await navigator.clipboard.writeText(message);
-                  console.log('✅ Message copied to clipboard');
-                  toast.success('Mensaje copiado! Pega (Ctrl+V) en WhatsApp', {
-                    duration: 5000,
-                    icon: '📋'
-                  });
                   
-                  // Open WhatsApp without text parameter (more reliable)
+                  // Check if clipboard API is available
+                  if (navigator.clipboard?.writeText) {
+                    await navigator.clipboard.writeText(message);
+                    console.log('✅ Message copied to clipboard');
+                    toast.success('Mensaje copiado! Pegalo en WhatsApp', {
+                      duration: 5000,
+                      icon: '📋'
+                    });
+                  } else {
+                    // Fallback: open WhatsApp with message in URL
+                    console.log('⚠️ Clipboard API not available, using URL fallback');
+                    window.open(`https://wa.me/${contactInfo.whatsapp}?text=${encodeURIComponent(message)}`, '_blank');
+                    return;
+                  }
+                  
+                  // Short delay to allow user to see the toast before WhatsApp opens
                   setTimeout(() => {
                     window.open(`https://wa.me/${contactInfo.whatsapp}`, '_blank');
                   }, 500);
                 } catch (error) {
                   console.error('❌ Error copying message:', error);
                   toast.error('Error al copiar el mensaje');
+                  // Fallback: open WhatsApp with message in URL
+                  const message = generateWhatsAppMessage();
+                  window.open(`https://wa.me/${contactInfo.whatsapp}?text=${encodeURIComponent(message)}`, '_blank');
                 }
               }}
               className="w-full inline-flex items-center justify-center gap-3 px-8 py-5 bg-green-600 text-white text-lg font-semibold rounded-full hover:bg-green-700 transition-colors shadow-lg shadow-green-600/25"
@@ -450,7 +462,7 @@ export default function ConfirmacionPage() {
               Al hacer clic, el mensaje se copiará automáticamente.
             </p>
             <p className="mt-1">
-              Solo tenés que pegarlo (Ctrl+V) en WhatsApp y enviar 📱
+              Solo tenés que pegarlo en WhatsApp y enviar 📱
             </p>
           </motion.div>
 
