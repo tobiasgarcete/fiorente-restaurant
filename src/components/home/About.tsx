@@ -26,6 +26,14 @@ export default function About() {
     },
   ];
 
+  // Galería de imágenes reales
+  const galeria = [
+    { src: '/images/frente.jpg', alt: 'Frente Fiorente' },
+    { src: '/images/fachada.jpg', alt: 'Fachada Fiorente' },
+    { src: '/images/logo_circular.jpg', alt: 'Logo Circular Fiorente' },
+    { src: '/images/nombre.jpg', alt: 'Nombre Fiorente' },
+  ];
+
   return (
     <section id="nosotros" className="py-20 bg-fiorente-secondary">
       <div className="container mx-auto px-4">
@@ -73,7 +81,7 @@ export default function About() {
           ))}
         </div>
 
-        {/* Gallery Placeholder */}
+        {/* Galería de Imágenes reales */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -81,16 +89,17 @@ export default function About() {
           transition={{ duration: 0.8 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-4"
         >
-          {[1, 2, 3, 4].map((item) => (
+          {galeria.map((img) => (
             <div
-              key={item}
+              key={img.src}
               className="aspect-square bg-gradient-to-br from-fiorente-primary/20 to-fiorente-dark rounded-xl overflow-hidden group cursor-pointer"
             >
-              <div className="w-full h-full flex items-center justify-center bg-fiorente-dark/50 group-hover:bg-fiorente-dark/30 transition-all duration-300">
-                <span className="text-fiorente-primary/50 text-sm">
-                  Imagen {item}
-                </span>
-              </div>
+              <img
+                src={img.src}
+                alt={img.alt}
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                draggable={false}
+              />
             </div>
           ))}
         </motion.div>
