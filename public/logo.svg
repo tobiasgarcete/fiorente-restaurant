@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60">
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#F0A030;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFB84D;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Logo Text -->
+  <text x="100" y="38" font-family="Georgia, serif" font-size="32" font-weight="bold" 
+        fill="url(#logoGradient)" text-anchor="middle" letter-spacing="3">
+    FIORENTE
+  </text>
+  
+  <!-- Decorative Line -->
+  <line x1="30" y1="50" x2="170" y2="50" stroke="#F0A030" stroke-width="1"/>
+  
+  <!-- Tagline -->
+  <text x="100" y="58" font-family="Arial, sans-serif" font-size="6" fill="#F0A030" text-anchor="middle" letter-spacing="2">
+    PIZZERÍA | CAFETERÍA | BAR
+  </text>
+</svg>
