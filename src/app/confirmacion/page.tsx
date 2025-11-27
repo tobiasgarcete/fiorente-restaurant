@@ -65,17 +65,24 @@ export default function ConfirmacionPage() {
 
   // Load order data from sessionStorage
   useEffect(() => {
+    console.log('🔍 Loading order data from sessionStorage...');
+    
     try {
       const storedOrder = sessionStorage.getItem('lastOrder');
+      console.log('📦 Raw sessionStorage data:', storedOrder);
+      
       if (storedOrder) {
         const parsedOrder = JSON.parse(storedOrder);
+        console.log('✅ Order data parsed successfully:', parsedOrder);
         setOrderData(parsedOrder);
       } else {
+        console.log('❌ No order data found in sessionStorage');
+        console.log('⚠️ Redirecting to home page...');
         // No order data, redirect to home
         router.push('/');
       }
     } catch (error) {
-      console.error('Error loading order data:', error);
+      console.error('❌ Error loading order data:', error);
       toast.error('Error al cargar los datos del pedido');
       router.push('/');
     } finally {
@@ -100,16 +107,26 @@ export default function ConfirmacionPage() {
   // Generate WhatsApp message with full order details
   // Note: Avoiding emojis and special characters for better encoding compatibility
   const generateWhatsAppMessage = useCallback((): string => {
-    if (!orderData) return '';
+    if (!orderData) {
+      console.log('❌ No order data available for WhatsApp message');
+      return '';
+    }
 
-    const deliveryTypeText = orderData.deliveryType === 'retiro' ? 'Retiro en local' : 'Envio a domicilio';
+    console.log('📱 Generating WhatsApp message for order:', orderData.orderNumber);
+
+    const deliveryTypeText = orderData.deliveryType === 'retiro' 
+      ? 'Retiro en local' 
+      : 'Envio a domicilio';
     
-    // Build items list
+    // Build items list (simple format without special characters)
     const itemsList = orderData.items
-      .map((item) => `${item.name} x${item.quantity} - ${(item.price * item.quantity).toLocaleString('es-AR')}`)
+      .map((item) => {
+        const subtotal = item.price * item.quantity;
+        return `${item.name} x${item.quantity} - ${subtotal.toLocaleString('es-AR')}`;
+      })
       .join('\n');
 
-    // Build message parts
+    // Build message (NO emojis, NO asterisks, plain text only)
     const messageParts = [
       'Hola Fiorente!',
       '',
@@ -118,8 +135,14 @@ export default function ConfirmacionPage() {
       `Pedido: ${orderData.orderNumber}`,
       `Nombre: ${orderData.customerName}`,
       `Telefono: ${orderData.customerPhone}`,
-      `Tipo: ${deliveryTypeText}`
     ];
+
+    // Add email if provided
+    if (orderData.customerEmail) {
+      messageParts.push(`Email: ${orderData.customerEmail}`);
+    }
+
+    messageParts.push(`Tipo: ${deliveryTypeText}`);
 
     // Add address if delivery
     if (orderData.deliveryType === 'envio' && orderData.deliveryAddress) {
@@ -130,12 +153,17 @@ export default function ConfirmacionPage() {
     messageParts.push('');
     messageParts.push('Detalle del pedido:');
     messageParts.push(itemsList);
+    
+    // Add total
     messageParts.push('');
-    messageParts.push(`Total: ${orderData.totalAmount.toLocaleString('es-AR')}`);
+    messageParts.push(`TOTAL: ${orderData.totalAmount.toLocaleString('es-AR')}`);
     messageParts.push('');
     messageParts.push('Como puedo realizar el pago?');
 
-    return messageParts.join('\n');
+    const finalMessage = messageParts.join('\n');
+    console.log('✅ WhatsApp message generated:', finalMessage);
+
+    return finalMessage;
   }, [orderData]);
 
   // Generate a simpler message as fallback
@@ -148,13 +176,16 @@ export default function ConfirmacionPage() {
   useEffect(() => {
     if (orderData) {
       const message = generateWhatsAppMessage();
-      console.log('WhatsApp Message:', message);
-      console.log('WhatsApp URL:', `https://wa.me/${contactInfo.whatsapp}?text=${encodeURIComponent(message)}`);
+      console.log('📱 WhatsApp Message:', message);
+      console.log('🔗 WhatsApp URL:', `https://wa.me/${contactInfo.whatsapp}?text=${encodeURIComponent(message)}`);
     }
   }, [orderData, generateWhatsAppMessage]);
 
-  const whatsappMessage = generateWhatsAppMessage();
-  const whatsappUrl = `https://wa.me/${contactInfo.whatsapp}?text=${encodeURIComponent(whatsappMessage)}`;
+  // Generate message and URL
+  const whatsappMessage = orderData ? generateWhatsAppMessage() : '';
+  const whatsappUrl = whatsappMessage 
+    ? `https://wa.me/${contactInfo.whatsapp}?text=${encodeURIComponent(whatsappMessage)}`
+    : `https://wa.me/${contactInfo.whatsapp}`;
   const simpleWhatsappMessage = generateSimpleWhatsAppMessage();
   const simpleWhatsappUrl = `https://wa.me/${contactInfo.whatsapp}?text=${encodeURIComponent(simpleWhatsappMessage)}`;
 
@@ -372,10 +403,11 @@ export default function ConfirmacionPage() {
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => console.log('📱 WhatsApp button clicked')}
               className="w-full inline-flex items-center justify-center gap-3 px-8 py-5 bg-green-600 text-white text-lg font-semibold rounded-full hover:bg-green-700 transition-colors shadow-lg shadow-green-600/25"
             >
               <MessageCircle size={24} />
-              📱 Confirmar pedido por WhatsApp
+              Confirmar pedido por WhatsApp
             </a>
             <a
               href={simpleWhatsappUrl}

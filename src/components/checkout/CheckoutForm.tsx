@@ -137,19 +137,32 @@ export default function CheckoutForm() {
         createdAt: new Date().toISOString()
       };
 
-      console.log('Saving order data to sessionStorage:', orderData);
-      sessionStorage.setItem('lastOrder', JSON.stringify(orderData));
-      console.log('Saved to sessionStorage');
+      // Log for debugging
+      console.log('💾 Saving order data to sessionStorage:', orderData);
 
-      // Show success message and navigate to confirmation
+      // Save to sessionStorage
+      sessionStorage.setItem('lastOrder', JSON.stringify(orderData));
+
+      // Verify it was saved
+      const savedData = sessionStorage.getItem('lastOrder');
+      console.log('✅ Data saved to sessionStorage:', savedData ? 'YES' : 'NO');
+
+      // Show success message
       toast.success('¡Pedido realizado con éxito!');
-      router.push('/confirmacion');
-      
-      // Clear cart after navigation starts
-      // Note: This delay ensures the navigation has started before clearing the cart,
-      // preventing the checkout page's empty-cart useEffect from redirecting to /menu
-      // The order data is already persisted in sessionStorage before this point
-      clearCart();
+
+      // Wait to ensure sessionStorage is persisted before navigation
+      setTimeout(() => {
+        console.log('🚀 Navigating to confirmation page...');
+        
+        // Navigate to confirmation page
+        router.push('/confirmacion');
+        
+        // Clear cart AFTER navigation has started
+        setTimeout(() => {
+          clearCart();
+          console.log('🗑️ Cart cleared');
+        }, 500);
+      }, 200);
     } catch (error) {
       console.error('Error submitting order:', error);
       toast.error('Error al procesar el pedido. Intenta nuevamente.');
