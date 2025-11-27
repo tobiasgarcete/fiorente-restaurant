@@ -401,16 +401,34 @@ export default function ConfirmacionPage() {
             transition={{ delay: 0.7 }}
             className="mb-6 text-center"
           >
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => console.log('📱 WhatsApp button clicked')}
+            <button
+              onClick={async () => {
+                console.log('📱 WhatsApp button clicked');
+                
+                // Copy message to clipboard
+                try {
+                  const message = generateWhatsAppMessage();
+                  await navigator.clipboard.writeText(message);
+                  console.log('✅ Message copied to clipboard');
+                  toast.success('Mensaje copiado! Pega (Ctrl+V) en WhatsApp', {
+                    duration: 5000,
+                    icon: '📋'
+                  });
+                  
+                  // Open WhatsApp without text parameter (more reliable)
+                  setTimeout(() => {
+                    window.open(`https://wa.me/${contactInfo.whatsapp}`, '_blank');
+                  }, 500);
+                } catch (error) {
+                  console.error('❌ Error copying message:', error);
+                  toast.error('Error al copiar el mensaje');
+                }
+              }}
               className="w-full inline-flex items-center justify-center gap-3 px-8 py-5 bg-green-600 text-white text-lg font-semibold rounded-full hover:bg-green-700 transition-colors shadow-lg shadow-green-600/25"
             >
               <MessageCircle size={24} />
               Confirmar pedido por WhatsApp
-            </a>
+            </button>
             <a
               href={simpleWhatsappUrl}
               target="_blank"
@@ -419,6 +437,21 @@ export default function ConfirmacionPage() {
             >
               ¿No funciona el botón? Prueba esta versión simple
             </a>
+          </motion.div>
+
+          {/* Instructions */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.9 }}
+            className="text-center text-sm text-gray-400 mt-4"
+          >
+            <p>
+              Al hacer clic, el mensaje se copiará automáticamente.
+            </p>
+            <p className="mt-1">
+              Solo tenés que pegarlo (Ctrl+V) en WhatsApp y enviar 📱
+            </p>
           </motion.div>
 
           {/* Secondary Actions */}
