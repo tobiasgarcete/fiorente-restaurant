@@ -32,7 +32,7 @@ export default function ConfirmacionPage() {
   useEffect(() => {
     // 1. Intentar sessionStorage primero
     const sessionOrderRaw =
-      typeof window !== 'undefined' && sessionStorage.getItem('lastOrder');
+      typeof window !== "undefined" && sessionStorage.getItem("lastOrder");
     if (sessionOrderRaw) {
       try {
         setOrder(JSON.parse(sessionOrderRaw));
@@ -45,7 +45,7 @@ export default function ConfirmacionPage() {
 
     // 2. Si no hay, buscar por número de pedido en la URL
     const params = new URLSearchParams(window.location.search);
-    const orderNumber = params.get('pedido');
+    const orderNumber = params.get("pedido");
     if (orderNumber) {
       fetch(`/api/pedidos?orderNumber=${orderNumber}`)
         .then((res) => res.json())
@@ -72,23 +72,27 @@ export default function ConfirmacionPage() {
   }
 
   // Arma el mensaje de WhatsApp personalizado
-  const waMessage =
-    `Hola, soy *${order.customerName}* y acabo de hacer el pedido *${order.orderNumber}*.\n` +
-    (order.deliveryType === 'envio'
-      ? `Dirección de entrega: ${order.deliveryAddress ?? ''}\n`
-      : '') +
-    `Teléfono: ${order.customerPhone}\n` +
-    (order.customerEmail ? `Email: ${order.customerEmail}\n` : '') +
-    `Total: $${order.totalAmount}\n` +
-    (order.notes ? `Notas: ${order.notes}\n` : '') +
-    `--------------------\n` +
+  const waMessage = [
+    `Hola, soy *${order.customerName}* y acabo de hacer el pedido *${order.orderNumber}*.`,
+    order.deliveryType === 'envio'
+      ? `Dirección de entrega: ${order.deliveryAddress ?? ''}`
+      : '',
+    `Teléfono: ${order.customerPhone}`,
+    order.customerEmail ? `Email: ${order.customerEmail}` : '',
+    `Total: $${order.totalAmount}`,
+    order.notes ? `Notas: ${order.notes}` : '',
+    `--------------------`,
     `Detalle:\n${order.items
       .map(
         (item) =>
           `- ${item.name} x${item.quantity} $${item.price * item.quantity}`
       )
-      .join('\n')}` +
-    `\n\n¿Cómo procedo con el pago?`;
+      .join('\n')}`,
+    '',
+    '¿Cómo procedo con el pago?',
+  ]
+    .filter(Boolean)
+    .join('\n');
 
   // Función para abrir WhatsApp y copiar el msg
   const enviarWa = async () => {
@@ -125,12 +129,12 @@ export default function ConfirmacionPage() {
           <b>Email:</b> {order.customerEmail}
         </div>
         <div className="mb-1">
-          <b>Tipo de entrega:</b>{' '}
-          {order.deliveryType === 'envio'
-            ? 'Envío a domicilio'
-            : 'Retiro en local'}
+          <b>Tipo de entrega:</b>{" "}
+          {order.deliveryType === "envio"
+            ? "Envío a domicilio"
+            : "Retiro en local"}
         </div>
-        {order.deliveryType === 'envio' && (
+        {order.deliveryType === "envio" && (
           <div className="mb-1">
             <b>Dirección:</b> {order.deliveryAddress}
           </div>
