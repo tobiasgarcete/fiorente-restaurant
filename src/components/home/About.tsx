@@ -89,7 +89,7 @@ export default function About() {
           transition={{ duration: 0.8 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-4"
         >
-          {galeria.map((img) => (
+          {galeria.map((img, idx) => (
             <div
               key={img.src}
               className="aspect-square bg-gradient-to-br from-fiorente-primary/20 to-fiorente-dark rounded-xl overflow-hidden group cursor-pointer"
@@ -97,7 +97,7 @@ export default function About() {
               <img
                 src={img.src}
                 alt={img.alt}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                className={`w-full h-full ${idx >= 2 ? 'object-contain p-4' : 'object-cover'} transition-transform duration-300 group-hover:scale-105`}
                 draggable={false}
               />
             </div>
