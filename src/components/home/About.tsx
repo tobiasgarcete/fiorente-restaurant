@@ -1,3 +1,5 @@
+// src/components/About.tsx
+
 'use client';
 
 import React from 'react';
@@ -87,7 +89,7 @@ export default function About() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 px-2 md:px-0"
         >
           {galeria.map((img, idx) => (
             <div
@@ -97,7 +99,7 @@ export default function About() {
               <img
                 src={img.src}
                 alt={img.alt}
-                className={`w-full h-full ${idx >= 2 ? 'object-contain p-4' : 'object-cover'} transition-transform duration-300 group-hover:scale-105`}
+                className={`w-full h-full ${idx >= 2 ? 'object-contain p-7' : 'object-cover'} transition-transform duration-300 group-hover:scale-105`}
                 draggable={false}
               />
             </div>
