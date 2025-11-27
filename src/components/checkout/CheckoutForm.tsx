@@ -119,10 +119,35 @@ export default function CheckoutForm() {
         throw new Error(data.error || 'Error al procesar el pedido');
       }
 
-      // Clear cart and redirect to confirmation
-      clearCart();
+      // Save order data to sessionStorage for confirmation page
+      const orderData = {
+        orderNumber: data.orderNumber,
+        customerName: formData.customerName,
+        customerPhone: formData.customerPhone,
+        customerEmail: formData.customerEmail || '',
+        deliveryType: formData.deliveryType,
+        deliveryAddress: formData.deliveryAddress || '',
+        items: items.map((item) => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+        })),
+        totalAmount: getTotalPrice(),
+        createdAt: new Date().toISOString()
+      };
+
+      sessionStorage.setItem('lastOrder', JSON.stringify(orderData));
+
+      // Redirect to confirmation first, then clear cart
+      // This prevents the checkout page's useEffect from redirecting to menu
       toast.success('¡Pedido realizado con éxito!');
-      router.push(`/confirmacion?orderNumber=${data.orderNumber}`);
+      router.push('/confirmacion');
+      
+      // Clear cart after navigation is initiated
+      setTimeout(() => {
+        clearCart();
+      }, 100);
     } catch (error) {
       console.error('Error submitting order:', error);
       toast.error('Error al procesar el pedido. Intenta nuevamente.');
